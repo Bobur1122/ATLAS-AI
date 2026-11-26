@@ -1,4 +1,4 @@
-"""Entry point and Phase 0 system readiness check for ATLAS AI."""
+"""Entry point and system readiness check for ATLAS AI (Completed through Phase 9)."""
 
 import sys
 
@@ -9,7 +9,7 @@ from atlas_ai.core.logger import setup_logging
 
 
 def run_foundation_check(settings: AppSettings | None = None) -> bool:
-    """Initialize configuration and logging, then verify Phase 0 foundational readiness.
+    """Initialize configuration and logging, then verify system readiness across Phases 0–9.
 
     Args:
         settings: Optional pre-loaded AppSettings instance for testing.
@@ -21,7 +21,7 @@ def run_foundation_check(settings: AppSettings | None = None) -> bool:
     logger = setup_logging(active_settings)
 
     logger.info(
-        "Starting %s v%s [Completed: Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, and Phase 7]",
+        "Starting %s v%s [Completed: Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, Phase 8, and Phase 9]",
         __app_name__,
         __version__,
     )
@@ -33,7 +33,7 @@ def run_foundation_check(settings: AppSettings | None = None) -> bool:
         active_settings.live_trading_enabled,
     )
     logger.info(
-        "System readiness check passed (Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, and Phase 7 completed). Ready for Phase 8."
+        "System readiness check passed (Phases 0–9 completed: Foundation, Domain/Risk, Market Data, Strategies, Backtest, Knowledge, ML Models, MT5 Demo Execution, Post-Trade Analytics/Governance, and Closed-Loop Demo Runtime Orchestrator). Strictly DEMO-only; live trading disabled."
     )
     return True
 

@@ -81,12 +81,26 @@ def test_logging_setup_writes_to_file(tmp_path: Path) -> None:
 
 
 def test_run_foundation_check_and_cli_entry(tmp_path: Path) -> None:
-    """Foundation check and CLI main() must succeed under valid settings."""
+    """Foundation check and CLI main() must succeed under valid settings and log Phase 0–9 readiness."""
+    import logging
+
+    log_dir = tmp_path / "cli_logs"
     settings = AppSettings(
         env=EnvironmentMode.TESTING,
-        log_dir=tmp_path / "cli_logs",
-        log_to_file=False,
+        log_dir=log_dir,
+        log_to_file=True,
     )
     assert run_foundation_check(settings) is True
     assert __version__ == "0.1.0"
+
+    logger = logging.getLogger("atlas_ai")
+    for handler in list(logger.handlers):
+        handler.flush()
+        handler.close()
+        logger.removeHandler(handler)
+
+    log_content = (log_dir / "atlas_ai.log").read_text(encoding="utf-8")
+    assert "Phase 8, and Phase 9" in log_content
+    assert "Phases 0–9 completed" in log_content
+    assert "Strictly DEMO-only; live trading disabled." in log_content
     assert main() == 0

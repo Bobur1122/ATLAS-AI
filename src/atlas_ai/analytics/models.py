@@ -304,6 +304,48 @@ class ExecutionQualityReport(BaseModel):
     )
     cost_drag_r_per_trade: Decimal = Field(default=Decimal("0.0000"))
 
+    @model_validator(mode="after")
+    def validate_slippage_counts(self) -> "ExecutionQualityReport":
+        expected_total = (
+            self.adverse_entry_slippage_count
+            + self.favorable_entry_slippage_count
+            + self.zero_entry_slippage_count
+        )
+        if expected_total != self.total_evaluated_trades:
+            raise ValueError(
+                f"Slippage count partition violation: adverse ({self.adverse_entry_slippage_count}) + "
+                f"favorable ({self.favorable_entry_slippage_count}) + zero ({self.zero_entry_slippage_count}) "
+                f"!= total_evaluated_trades ({self.total_evaluated_trades})."
+            )
+        if self.partial_exit_trade_count > self.total_evaluated_trades:
+            raise ValueError(
+                f"partial_exit_trade_count ({self.partial_exit_trade_count}) cannot exceed "
+                f"total_evaluated_trades ({self.total_evaluated_trades})."
+            )
+        expected_drag = self.total_commission_usd + self.total_fee_usd - self.total_swap_usd
+        if self.total_cost_drag_usd != expected_drag:
+            raise ValueError(
+                f"Cost-drag identity violation: total_cost_drag_usd ({self.total_cost_drag_usd}) != "
+                f"commission ({self.total_commission_usd}) + fee ({self.total_fee_usd}) "
+                f"- swap ({self.total_swap_usd}) = {expected_drag}."
+            )
+        return self
+
+
+SINGLE_LABEL_DIMENSIONS: tuple[str, ...] = (
+    "source",
+    "timeframe",
+    "direction",
+    "strategy_id",
+    "regime",
+    "killzone_session",
+)
+
+MULTI_LABEL_DIMENSIONS: tuple[str, ...] = (
+    "contributing_strategy_id",
+    "knowledge_rule_id",
+)
+
 
 class SegmentPerformanceBreakdown(BaseModel):
     """Deterministic performance breakdown for a single slice (Regime, Session, Timeframe, Strategy, Rule)."""
@@ -332,6 +374,137 @@ class SegmentPerformanceBreakdown(BaseModel):
         description="True when total_trades < config.min_trades_for_drift_evaluation.",
     )
 
+    @model_validator(mode="after")
+    def validate_trade_counts(self) -> "SegmentPerformanceBreakdown":
+        if self.winning_trades + self.losing_trades + self.breakeven_trades != self.total_trades:
+            raise ValueError(
+                f"Segment ({self.dimension_name}={self.segment_key}) count mismatch: "
+                f"wins ({self.winning_trades}) + losses ({self.losing_trades}) + "
+                f"breakevens ({self.breakeven_trades}) != total_trades ({self.total_trades})."
+            )
+        return self
+
+
+class PerformanceAttributionReport(BaseModel):
+    """Immutable top-level Phase 8.2 report combining portfolio BacktestMetrics, R-curve drawdown,
+    ExecutionQualityReport, and multi-dimensional SegmentPerformanceBreakdown slices.
+    """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    overall_metrics: BacktestMetrics
+    overall_max_drawdown_r: Decimal = Field(default=Decimal("0.0000"), ge=Decimal("0"))
+    verified_context_trades: int = Field(..., ge=0)
+    unattributed_missing_context_trades: int = Field(..., ge=0)
+    execution_quality: ExecutionQualityReport
+    segment_breakdowns: tuple[SegmentPerformanceBreakdown, ...] = Field(default=())
+
+    @model_validator(mode="after")
+    def validate_portfolio_and_dimension_invariants(self) -> "PerformanceAttributionReport":
+        total_n = self.overall_metrics.total_trades
+        if self.verified_context_trades + self.unattributed_missing_context_trades != total_n:
+            raise ValueError(
+                f"Context attribution count mismatch: verified ({self.verified_context_trades}) + "
+                f"unattributed ({self.unattributed_missing_context_trades}) != total_trades ({total_n})."
+            )
+        if self.execution_quality.total_evaluated_trades != total_n:
+            raise ValueError(
+                f"execution_quality.total_evaluated_trades ({self.execution_quality.total_evaluated_trades}) "
+                f"!= overall_metrics.total_trades ({total_n})."
+            )
+
+        by_dim: dict[str, list[SegmentPerformanceBreakdown]] = {}
+        seen_keys: set[tuple[str, str]] = set()
+        for seg in self.segment_breakdowns:
+            pair = (seg.dimension_name, seg.segment_key)
+            if pair in seen_keys:
+                raise ValueError(
+                    f"Duplicate SegmentPerformanceBreakdown for dimension='{seg.dimension_name}', "
+                    f"segment_key='{seg.segment_key}'."
+                )
+            seen_keys.add(pair)
+            by_dim.setdefault(seg.dimension_name, []).append(seg)
+
+        # Single-label dimensions must partition total_trades and net_profit_usd exactly
+        for dim_name in SINGLE_LABEL_DIMENSIONS:
+            segs = by_dim.get(dim_name, [])
+            if total_n == 0:
+                if segs:
+                    raise ValueError(
+                        f"Single-label dimension '{dim_name}' must be empty when total_trades == 0."
+                    )
+                continue
+            if not segs:
+                continue
+            sum_trades = sum(s.total_trades for s in segs)
+            sum_wins = sum(s.winning_trades for s in segs)
+            sum_losses = sum(s.losing_trades for s in segs)
+            sum_be = sum(s.breakeven_trades for s in segs)
+            sum_net = sum((s.net_profit_usd for s in segs), Decimal("0.00"))
+            sum_gp = sum((s.gross_profit_usd for s in segs), Decimal("0.00"))
+            sum_gl = sum((s.gross_loss_usd for s in segs), Decimal("0.00"))
+            if (
+                sum_trades != total_n
+                or sum_wins != self.overall_metrics.winning_trades
+                or sum_losses != self.overall_metrics.losing_trades
+                or sum_be != self.overall_metrics.breakeven_trades
+                or sum_net != self.overall_metrics.net_profit_usd
+                or sum_gp != self.overall_metrics.gross_profit
+                or sum_gl != self.overall_metrics.gross_loss
+            ):
+                raise ValueError(
+                    f"Single-label partition invariant violated for dimension '{dim_name}': "
+                    f"sum_trades={sum_trades} (expected {total_n}), sum_net={sum_net} "
+                    f"(expected {self.overall_metrics.net_profit_usd})."
+                )
+
+        # Multi-label dimensions: each segment has 1 <= total_trades <= total_n, and sum >= total_n
+        for dim_name in MULTI_LABEL_DIMENSIONS:
+            segs = by_dim.get(dim_name, [])
+            if total_n == 0:
+                if segs:
+                    raise ValueError(
+                        f"Multi-label dimension '{dim_name}' must be empty when total_trades == 0."
+                    )
+                continue
+            if not segs:
+                continue
+            for s in segs:
+                if not (1 <= s.total_trades <= total_n):
+                    raise ValueError(
+                        f"Multi-label segment ({dim_name}={s.segment_key}) has invalid "
+                        f"total_trades={s.total_trades} (portfolio total_trades={total_n})."
+                    )
+            sum_multi_trades = sum(s.total_trades for s in segs)
+            if sum_multi_trades < total_n:
+                raise ValueError(
+                    f"Multi-label coverage violation for dimension '{dim_name}': "
+                    f"sum(total_trades)={sum_multi_trades} < portfolio total_trades={total_n}."
+                )
+
+        return self
+
+    def get_segment(
+        self,
+        dimension_name: str,
+        segment_key: str,
+    ) -> SegmentPerformanceBreakdown | None:
+        """Look up a specific `(dimension_name, segment_key)` breakdown."""
+        dim_clean = dimension_name.strip()
+        key_clean = segment_key.strip()
+        for seg in self.segment_breakdowns:
+            if seg.dimension_name == dim_clean and seg.segment_key == key_clean:
+                return seg
+        return None
+
+    def list_dimension(
+        self,
+        dimension_name: str,
+    ) -> tuple[SegmentPerformanceBreakdown, ...]:
+        """Return all `SegmentPerformanceBreakdown` slices for `dimension_name`."""
+        dim_clean = dimension_name.strip()
+        return tuple(seg for seg in self.segment_breakdowns if seg.dimension_name == dim_clean)
+
 
 class DriftAndHealthReport(BaseModel):
     """Deterministic diagnostic report evaluating strategy expectancy, ML calibration, and execution drift."""
@@ -351,6 +524,66 @@ class DriftAndHealthReport(BaseModel):
     quarantine_recommended_rule_ids: tuple[str, ...] = Field(default=())
     warnings: tuple[str, ...] = Field(default=())
     overall_metrics: BacktestMetrics
+
+    @model_validator(mode="after")
+    def validate_drift_report_invariants(self) -> "DriftAndHealthReport":
+        for field_name, val in (
+            ("realized_expectancy_r", self.realized_expectancy_r),
+            ("realized_brier_score", self.realized_brier_score),
+            ("realized_ece", self.realized_ece),
+            ("brier_drift_from_baseline", self.brier_drift_from_baseline),
+            ("ece_drift_from_baseline", self.ece_drift_from_baseline),
+            ("mean_entry_slippage_points", self.mean_entry_slippage_points),
+        ):
+            if not isinstance(val, Decimal) or not val.is_finite():
+                raise ValueError(
+                    f"DriftAndHealthReport.{field_name} must be a finite Decimal, got {val!r}."
+                )
+
+        if self.total_trades != self.overall_metrics.total_trades:
+            raise ValueError(
+                f"DriftAndHealthReport.total_trades ({self.total_trades}) != "
+                f"overall_metrics.total_trades ({self.overall_metrics.total_trades})."
+            )
+        if self.insufficient_sample:
+            if self.overall_status != DriftStatus.INSUFFICIENT_SAMPLE:
+                raise ValueError(
+                    f"overall_status must be INSUFFICIENT_SAMPLE when insufficient_sample=True "
+                    f"(got {self.overall_status})."
+                )
+            if self.quarantine_recommended_rule_ids or self.warnings:
+                raise ValueError(
+                    "quarantine_recommended_rule_ids and warnings must be empty when insufficient_sample=True."
+                )
+        else:
+            if self.overall_status == DriftStatus.INSUFFICIENT_SAMPLE:
+                raise ValueError(
+                    "overall_status cannot be INSUFFICIENT_SAMPLE when insufficient_sample=False."
+                )
+            if self.overall_status == DriftStatus.HEALTHY:
+                if self.warnings or self.quarantine_recommended_rule_ids:
+                    raise ValueError(
+                        "HEALTHY DriftAndHealthReport cannot contain warnings or quarantine_recommended_rule_ids."
+                    )
+            elif self.overall_status in (
+                DriftStatus.WARNING_DRIFT_DETECTED,
+                DriftStatus.EXECUTION_DEGRADED,
+            ):
+                if not self.warnings:
+                    raise ValueError(
+                        f"{self.overall_status.value} requires at least one diagnostic warning."
+                    )
+                if self.quarantine_recommended_rule_ids:
+                    raise ValueError(
+                        f"overall_status must be QUARANTINE_RECOMMENDED when quarantine_recommended_rule_ids "
+                        f"is non-empty (got {self.overall_status.value})."
+                    )
+            elif self.overall_status == DriftStatus.QUARANTINE_RECOMMENDED:
+                if not (self.quarantine_recommended_rule_ids or self.warnings):
+                    raise ValueError(
+                        "QUARANTINE_RECOMMENDED requires non-empty quarantine_recommended_rule_ids or warnings."
+                    )
+        return self
 
 
 class GovernancePromotionDecision(BaseModel):
@@ -373,3 +606,34 @@ class GovernancePromotionDecision(BaseModel):
     horizon_bars: int = Field(..., ge=1)
     rejection_reasons: tuple[str, ...] = Field(default=())
     rationale: str = Field(..., min_length=1)
+
+    @model_validator(mode="after")
+    def validate_governance_invariants(self) -> "GovernancePromotionDecision":
+        for field_name, val in (
+            ("baseline_expectancy_r", self.baseline_expectancy_r),
+            ("candidate_expectancy_r", self.candidate_expectancy_r),
+            ("baseline_ece", self.baseline_ece),
+            ("candidate_ece", self.candidate_ece),
+            ("candidate_max_drawdown_r", self.candidate_max_drawdown_r),
+        ):
+            if not isinstance(val, Decimal) or not val.is_finite():
+                raise ValueError(
+                    f"GovernancePromotionDecision.{field_name} must be a finite Decimal, got {val!r}."
+                )
+
+        if self.purge_bars < self.horizon_bars:
+            raise ValueError(
+                f"LEAKAGE VIOLATION on GovernancePromotionDecision: purge_bars ({self.purge_bars}) "
+                f"must be >= horizon_bars ({self.horizon_bars})."
+            )
+        if self.requires_human_approval is not True:
+            raise ValueError("requires_human_approval must invariantly be True.")
+        if self.approved_for_human_review and self.rejection_reasons:
+            raise ValueError(
+                "approved_for_human_review=True requires rejection_reasons to be empty."
+            )
+        if not self.approved_for_human_review and not self.rejection_reasons:
+            raise ValueError(
+                "approved_for_human_review=False requires at least one rejection reason."
+            )
+        return self

@@ -1,0 +1,325 @@
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/architecture.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/atlas_ai/main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_foundation.py', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/README.md b/README.md[m
+[1mindex 7854ee0..41cb5e6 100644[m
+[1m--- a/README.md[m
+[1m+++ b/README.md[m
+[36m@@ -1,35 +1,35 @@[m
+ # ATLAS AI — Modular Autonomous Forex Trading Intelligence System[m
+ [m
+ **Current Version:** `0.1.0`  [m
+[31m-**Current Phase:** Phase 7 — MetaTrader 5 (MT5) Integration & Demo Execution Engine (Completed)  [m
+[32m+[m[32m**Current Phase:** Phase 9 — Closed-Loop Demo Runtime Orchestration & Persistent Emergency Circuit Breaker (Completed through Phase 9.3)[m[41m  [m
+ **Primary Instrument:** `XAUUSD` (Gold vs. US Dollar)[m
+ [m
+ ---[m
+ [m
+ ## 1. What ATLAS AI Is[m
+ [m
+[31m-ATLAS AI is a modular, safety-first autonomous Forex trading intelligence system designed to learn structured trading rules from educational materials, analyze market structure and statistical patterns on historical and live market data, generate disciplined `BUY`, `SELL`, or `WAIT` decisions, enforce deterministic risk management independent of any LLM or ML model, and integrate with MetaTrader 5 (MT5) for backtesting and strictly gated **DEMO-only** order execution.[m
+[32m+[m[32mATLAS AI is a modular, safety-first autonomous Forex trading intelligence system designed to learn structured trading rules from educational materials, analyze market structure and statistical patterns on historical and live market data, generate disciplined `BUY`, `SELL`, or `WAIT` decisions, enforce deterministic risk management independent of any LLM or ML model, evaluate post-trade performance attribution and drift governance, and integrate with MetaTrader 5 (MT5) for backtesting and strictly gated **DEMO-only** closed-loop execution.[m
+ [m
+ ---[m
+ [m
+[31m-## 2. Project Capabilities & Roadmap Overview[m
+[32m+[m[32m## 2. Project Capabilities & Completed Roadmap (Phases 0–9)[m
+ [m
+[31m-### Currently Implemented (Phases 0, 1, 2, 3, 4, 5, 6 & 7)[m
+[31m-- **Phase 0 — Project Foundation:**[m
+[31m-  - Standardized Python `src/` package layout (`atlas_ai`), `AppSettings` (`src/atlas_ai/core/config.py`) with a deterministic safety gate blocking unauthorized `live` trading mode, rotating file logging (`src/atlas_ai/core/logger.py`), and CLI entrypoint (`src/atlas_ai/main.py`).[m
+[31m-- **Phase 1 — Core Domain Schemas & Deterministic Risk Engine Foundation:**[m
+[32m+[m[32m### Currently Implemented (Phases 0 through 9.3)[m
+[32m+[m[32m- **Phase 0 — Project Foundation (`src/atlas_ai/core/`):**[m
+[32m+[m[32m  - Standardized Python `src/` package layout (`atlas_ai`), `AppSettings` (`config.py`) with a deterministic safety gate blocking unauthorized `live` trading mode, rotating file logging (`logger.py`), and CLI readiness entrypoint (`src/atlas_ai/main.py`).[m
+[32m+[m[32m- **Phase 1 — Core Domain Schemas & Deterministic Risk Engine Foundation (`src/atlas_ai/domain/`, `src/atlas_ai/risk/`):**[m
+   - Immutable (`frozen=True`) Decimal-based domain models: `Candle`, `Timeframe`, `InstrumentSpec` (`market.py`), `SignalDirection`, `TradeSignal` (`signals.py`), `AccountState`, `RiskParameters`, `PositionSizeResult`, `RiskDecision`, `RiskRejectionCode` (`risk.py`).[m
+   - Standalone, LLM-independent `RiskEngine` and deterministic `calculate_position_size()` (`src/atlas_ai/risk/engine.py`) enforcing 10 sequential pre-trade safety gates and downward (`ROUND_DOWN`) volume step rounding.[m
+[31m-- **Phase 2 — Market Data Ingestion, Validation & Feature Pipeline:**[m
+[31m-  - Historical CSV OHLCV ingestion (`HistoricalCSVLoader`), OHLCV & calendar-aware time-series integrity validator (`MarketDataValidator`, `check_timeseries_integrity`), and lookahead-free `FeaturePipeline` (`src/atlas_ai/data/`, `src/atlas_ai/features/`).[m
+[31m-- **Phase 3 — Advanced Strategy Engine & Multi-Rule SMC/ICT Signal Generation:**[m
+[31m-  - `MarketRegimeDetector`, `EmaTrendStrategy`, `MarketStructureStrategy`, `LiquiditySweepStrategy`, `FVGDetectionStrategy`, `FVGRetestStrategy`, `PremiumDiscountAnalyzer`, `PreviousDayLevelsAnalyzer`, `KillZoneSessionAnalyzer`, `MultiTimeframeAnalyzer` (`filter_closed_candles_as_of`), `NewsFilter`, `ConfluenceEngine`, `SignalGenerator`, `SignalLifecycleManager`, and `StrategyEngine` (`src/atlas_ai/strategies/`).[m
+[31m-- **Phase 4 — Historical Backtesting Engine:**[m
+[31m-  - Chronological event-driven `BacktestEngine`, `ExecutionSimulator` (spread, adverse slippage, commission, post-cost effective RR validation, conservative `STOP_LOSS` intrabar priority), `PortfolioTracker` (Decimal accounting & 5 PM NY DST-aware rollover), and `calculate_backtest_metrics()` (`src/atlas_ai/backtest/`).[m
+[31m-- **Phase 5 — Educational Knowledge Ingestion & Structured Rule Extraction:**[m
+[31m-  - Multi-format `KnowledgeDocumentLoader` & `TextChunker` (`.txt`, `.md`, `.srt`, `.vtt`, `.json`), offline `DeterministicRuleExtractor` & `LLMExtractorAdapter`, `KnowledgeRuleValidator`, `KnowledgeRepository`, and `KnowledgeBasedStrategy(BaseStrategy)` (`src/atlas_ai/knowledge/`).[m
+[31m-- **Phase 6 — Machine Learning & Statistical Intelligence:**[m
+[31m-  - Leakage-safe `TripleBarrierLabeler` (`src/atlas_ai/models/labeling.py`) computing `BUY`, `SELL`, and `WAIT` labels over a bounded forward horizon $H$ with conservative `STOP_LOSS`-first intrabar priority and deterministic dual-outcome conflict resolution.[m
+[32m+[m[32m- **Phase 2 — Market Data Ingestion, Validation & Feature Pipeline (`src/atlas_ai/data/`, `src/atlas_ai/features/`):**[m
+[32m+[m[32m  - Historical CSV OHLCV ingestion (`HistoricalCSVLoader`), OHLCV & calendar-aware time-series integrity validator (`MarketDataValidator`, `check_timeseries_integrity`), and lookahead-free `FeaturePipeline`.[m
+[32m+[m[32m- **Phase 3 — Advanced Strategy Engine & Multi-Rule SMC/ICT Signal Generation (`src/atlas_ai/strategies/`):**[m
+[32m+[m[32m  - `MarketRegimeDetector`, `EmaTrendStrategy`, `MarketStructureStrategy`, `LiquiditySweepStrategy`, `FVGDetectionStrategy`, `FVGRetestStrategy`, `PremiumDiscountAnalyzer`, `PreviousDayLevelsAnalyzer`, `KillZoneSessionAnalyzer`, `MultiTimeframeAnalyzer` (`filter_closed_candles_as_of`), `NewsFilter`, `ConfluenceEngine`, `SignalGenerator`, `SignalLifecycleManager`, and `StrategyEngine`.[m
+[32m+[m[32m- **Phase 4 — Historical Backtesting Engine (`src/atlas_ai/backtest/`):**[m
+[32m+[m[32m  - Chronological event-driven `BacktestEngine`, `ExecutionSimulator` (spread, adverse slippage, commission, post-cost effective RR validation, conservative `STOP_LOSS` intrabar priority), `PortfolioTracker` (Decimal accounting & 5 PM NY DST-aware rollover), and `calculate_backtest_metrics()`.[m
+[32m+[m[32m- **Phase 5 — Educational Knowledge Ingestion & Structured Rule Extraction (`src/atlas_ai/knowledge/`):**[m
+[32m+[m[32m  - Multi-format `KnowledgeDocumentLoader` & `TextChunker` (`.txt`, `.md`, `.srt`, `.vtt`, `.json`), offline `DeterministicRuleExtractor` & `LLMExtractorAdapter`, `KnowledgeRuleValidator`, `KnowledgeRepository`, and `KnowledgeBasedStrategy(BaseStrategy)`.[m
+[32m+[m[32m- **Phase 6 — Machine Learning & Statistical Intelligence (`src/atlas_ai/models/`):**[m
+[32m+[m[32m  - Leakage-safe `TripleBarrierLabeler` (`labeling.py`) computing `BUY`, `SELL`, and `WAIT` labels over a bounded forward horizon $H$ with conservative `STOP_LOSS`-first intrabar priority and deterministic dual-outcome conflict resolution.[m
+   - Causal, stationary `MLFeatureBuilder` and train-fold-only `FoldStandardScaler` (`features.py`).[m
+   - Classical statistical & ML classifiers (`classifiers.py`): `RegularizedLogisticClassifier` (multinomial L2 softmax) and `GradientBoostedStumpEnsemble` (second-order Newton GBDT) with deterministic JSON artifact persistence (`save_artifact` / `load_model_artifact`).[m
+   - Chronological `WalkForwardValidator` (`validation.py`) enforcing `purge_bars >= horizon_bars` (`ModelDataLeakageError`), validation-only model selection, separate `BUY`/`SELL`/`WAIT` classification metrics, Brier/ECE calibration, and R-multiple trading expectancy.[m
+[36m@@ -38,10 +38,14 @@[m [mATLAS AI is a modular, safety-first autonomous Forex trading intelligence system[m
+   - **Pluggable Backend & Lazy MT5 Loading (`backend.py`, `models.py`, `config.py`, `exceptions.py`):** `@runtime_checkable` `MT5TerminalBackend` protocol, `RealMetaTrader5Backend` with lazy `importlib.import_module("MetaTrader5")` and hardware-level `trade_mode == 0` guard, and deterministic offline `MockMT5TerminalBackend`.[m
+   - **Connection & Market Data Adapters (`connection.py`, `market_data.py`):** `MT5ConnectionAdapter` enforcing `account_info.trade_mode == 0 (ACCOUNT_TRADE_MODE_DEMO)`, expected login/server validation, bounded reconnection with DEMO re-verification, execution-mode-aware filling policy resolution (`resolve_supported_filling_mode`), and `MT5MarketDataAdapter` retrieving UTC-normalized Bid/Ask ticks and closed candles (`start_pos=1`) integrated with Phase 2 `MarketDataPipeline`.[m
+   - **Crash-Safe OS-Locked Persistence & Account Risk Accounting (`persistence.py`, `account_state.py`):** `FileLock` (`msvcrt.locking` on Windows, `fcntl.flock` on POSIX) with automatic OS kernel crash release, `CrashSafeJsonPersistence` with atomic temp-file + `os.fsync` + `os.replace`, SHA-256 checksums, monotonic generations, `previous_checksum` hash chains, valid `.tmp.*` envelope recovery, and stale `.bak` anti-rollback protection; `PersistentAccountRiskTracker` enforcing mandatory `TrustedBalanceAnchor` balance completeness verification, all 18 official MQL5 (`0..17`) deal and commission classifications, broker credit filtering, and DST-aware 5 PM `America/New_York` rollover.[m
+[31m-  - **14-Step Pre-Trade Safety Gate, Write-Ahead Execution Ledger & Demo Engine (`safety.py`, `ledger.py`, `engine.py`):** `PreTradeSafetyGate` enforcing 14 deterministic pre-trade checks (including `MT5SymbolTradeMode`, spread in `symbol_info.point`, price drift, stop/freeze levels, `RiskEngine.evaluate()`, volume/filling rules, and `order_check()`); `PersistentExecutionLedger` persisting `CREATED` $\rightarrow$ `VALIDATED` $\rightarrow$ `SUBMITTING` before `order_send()`, blocking new submissions on any unresolved intent or recovery lock, and reconciling against broker positions, working orders, and historical deals via exact token matching; and `MT5DemoExecutionEngine` enforcing pre-send TOCTOU re-checks, complete MQL5 retcode handling (`DETERMINISTIC_REJECTION_RETCODES`, ambiguous `10011`/`10012`/`10023`/`10031`/unknown, `10008 PLACED`, `10010 DONE_PARTIAL`, `10009 DONE`), post-accept broker verification, and immediate terminal shutdown on `10032 (TRADE_RETCODE_ONLY_REAL)` or non-demo accounts.[m
+[31m-[m
+[31m-### Planned Capabilities (Future Phases)[m
+[31m-- **Phase 8 — Post-Trade Analytics & Continuous Feedback Loop:** Evaluating completed demo/backtest trades to refine datasets, rules, and statistical models.[m
+[32m+[m[32m  - **14-Step Pre-Trade Safety Gate, Write-Ahead Execution Ledger & Demo Engine (`safety.py`, `ledger.py`, `engine.py`):** `PreTradeSafetyGate` enforcing 14 deterministic pre-trade checks; `PersistentExecutionLedger` persisting `CREATED` $\rightarrow$ `VALIDATED` $\rightarrow$ `SUBMITTING` before `order_send()`, blocking new submissions on any unresolved intent or recovery lock, and reconciling against broker positions, working orders, and historical deals; and `MT5DemoExecutionEngine` enforcing pre-send TOCTOU re-checks, complete MQL5 retcode handling, post-accept broker verification, and immediate terminal shutdown on `10032 (TRADE_RETCODE_ONLY_REAL)` or non-demo accounts.[m
+[32m+[m[32m- **Phase 8 — Post-Trade Analytics, Performance Attribution & Drift/Promotion Governance (`src/atlas_ai/analytics/`):**[m
+[32m+[m[32m  - **Phase 8.1 & 8.1.1 — Trade Reconstruction & Persistent Trade Journal (`trade_reconstructor.py`, `journal.py`, `models.py`, `config.py`, `exceptions.py`):** `PersistentTradeJournal` using Phase 7 `CrashSafeJsonPersistence` with mandatory pre-send `EntryContextSnapshot` hook bound to `MT5DemoExecutionEngine` (aborting orders to `FAILED` before `order_send()` if entry-context persistence fails); `DemoTradeReconstructor` reconstructing closed and partially closed MT5 DEMO positions from deals (`DEAL_ENTRY_IN`, `DEAL_ENTRY_OUT`, `DEAL_TYPE_COMMISSION`), enforcing `net_pnl == gross_pnl - commission - fee + swap` without double-counting, tracking `PartialExitProgressRecord`, and failing closed on `DEAL_ENTRY_INOUT (2)` or `DEAL_ENTRY_OUT_BY (3)`.[m
+[32m+[m[32m  - **Phase 8.2 — Multi-Dimensional Performance Attribution & Execution Quality (`attribution.py`):** `PerformanceAttributionEngine` computing Phase 4-compatible `BacktestMetrics`, R-multiple Sharpe/Sortino/drawdown, `ExecutionQualityReport` (signed entry/exit slippage in `symbol_info.point`, adverse slippage rate, commission/swap cost drag), and non-overlapping single-label (`symbol`, `timeframe`, `direction`, `regime`, `killzone_session`, `strategy_id`, `ml_model_id`, `context_attribution_status`) vs. multi-label (`contributing_strategy_ids`, `contributing_knowledge_rule_ids`) segment breakdowns.[m
+[32m+[m[32m  - **Phase 8.3 — Drift Detection, Calibration Monitoring & Human-Gated Promotion Governance (`drift_and_governance.py`):** `DriftDetectionEngine` evaluating realized R-expectancy degradation, consecutive loss streaks, execution slippage degradation (`EXECUTION_DEGRADED`), post-trade ML Brier/ECE calibration drift, and advisory-only knowledge-rule quarantine recommendations (`QUARANTINE_RECOMMENDED`) without mutating `KnowledgeRepository`; `GovernancePromotionEvaluator` enforcing chronological walk-forward anti-leakage (`purge_bars >= horizon_bars`, strictly disjoint non-overlapping test folds), immutable Phase 1 `RiskParameters` ceilings (rejecting any risk relaxation or partial risk parameter arguments), and mandatory human approval (`requires_human_approval == True`).[m
+[32m+[m[32m- **Phase 9 — Closed-Loop Demo Runtime Orchestration & Persistent Emergency Circuit Breaker (`src/atlas_ai/runtime/`):**[m
+[32m+[m[32m  - **Phase 9.1 — Persistent Emergency Circuit Breaker & Runtime Config (`config.py`, `models.py`, `exceptions.py`, `circuit_breaker.py`):** Immutable `DemoRuntimeConfig` validating timeframe hierarchies (`higher_timeframes > primary_timeframe`) and circuit-breaker thresholds; crash-safe `EmergencyStopController` persisted via `CrashSafeJsonPersistence` and bound to `(account_login, server)`, latching `LATCHED_HALTED` on manual operator triggers, `DriftStatus.QUARANTINE_RECOMMENDED`, `DriftStatus.EXECUTION_DEGRADED`, `LedgerHealthStatus.RECOVERY_REQUIRED_LOCKED`, or consecutive connection/persistence failure thresholds, surviving restarts without auto-unlocking, and requiring explicit human reset with a non-empty rationale (`reset_emergency_stop()`).[m
+[32m+[m[32m  - **Phase 9.2 — Closed-Loop Demo Trading Orchestrator (`orchestrator.py`):** `PersistentBarStateTracker` providing crash-safe, account/server-bound `last_evaluated_bar_timestamp_utc` deduplication per `(symbol, timeframe)` with anti-regression protection; `DemoTradingOrchestrator` executing a deterministic 14-step closed-loop cycle (`run_single_cycle()`, `run_session()`, `request_shutdown()`) that always runs connection verification, unresolved order reconciliation, closed-trade journal synchronization, account risk state reconstruction, drift/ledger health evaluation, and emergency circuit-breaker authorization (Steps 1–7) before bar-close deduplication (Step 8), market data/feature/strategy/risk evaluation (Steps 9–12), journal context staging (Step 13), and dry-run or live-demo execution + bar-timestamp commit (Step 14).[m
+ [m
+ ---[m
+ [m
+[36m@@ -50,25 +54,36 @@[m [mATLAS AI is a modular, safety-first autonomous Forex trading intelligence system[m
+ Run the following commands from the project root (`c:\Users\User\OneDrive\Desktop\ATLAS AI`):[m
+ [m
+ ```powershell[m
+[31m-# 1. Run the complete automated offline test suite (Phases 0 through 7 — 124 tests)[m
+[31m-.\.venv\Scripts\pytest.exe[m
+[32m+[m[32m# 1. Run the complete automated offline test suite (Phases 0 through 9 — 153 tests)[m
+[32m+[m[32m.\.venv\Scripts\pytest.exe -v[m
+[32m+[m
+[32m+[m[32m# 2. Run the focused Phase 9 runtime & emergency circuit-breaker test suite (14 tests)[m
+[32m+[m[32m.\.venv\Scripts\pytest.exe tests/test_runtime.py -v[m
+[32m+[m
+[32m+[m[32m# 3. Run the focused Phase 8 post-trade analytics, attribution & governance test suite (15 tests)[m
+[32m+[m[32m.\.venv\Scripts\pytest.exe tests/test_analytics.py -v[m
+ [m
+[31m-# 2. Run the focused Phase 7 MT5 execution & safety test suite (29 tests)[m
+[32m+[m[32m# 4. Run the focused Phase 7 MT5 execution & safety test suite (29 tests)[m
+ .\.venv\Scripts\pytest.exe tests/test_execution.py -v[m
+ [m
+[31m-# 3. Run the ATLAS AI CLI readiness check[m
+[32m+[m[32m# 5. Run the ATLAS AI CLI readiness check[m
+ .\.venv\Scripts\python.exe -m atlas_ai.main[m
+ [m
+[31m-# 4. Run a deterministic historical XAUUSD backtest on the synthetic H1 fixture[m
+[32m+[m[32m# 6. Run a deterministic historical XAUUSD backtest on the synthetic H1 fixture[m
+ .\.venv\Scripts\python.exe -c "from atlas_ai.data import HistoricalCSVLoader; from atlas_ai.backtest import BacktestEngine, BacktestConfig; df = HistoricalCSVLoader().load_csv('tests/fixtures/synthetic_xauusd_h1.csv'); res = BacktestEngine(BacktestConfig(warmup_bars=50)).run(df); print(res.metrics.model_dump())"[m
+ ```[m
+ [m
+[31m-See [docs/architecture.md](docs/architecture.md) for the complete system architecture and Phase 7 execution safety specification.[m
+[32m+[m[32mSee [docs/architecture.md](docs/architecture.md) for the complete system architecture and Phase 7–9 execution, analytics, and runtime safety specifications.[m
+ [m
+ ---[m
+ [m
+[31m-## 4. Important Warnings & Trading Safety Limitations[m
+[32m+[m[32m## 4. Important Warnings, Current Limitations & Pre-Demo Operational Requirements[m
+ [m
+[31m-1. **No Unrestricted LLM or ML Execution:** Neither an LLM, an educational rule, nor a statistical/ML model has direct authority to place trades or override risk limits. Every signal must pass through `SignalLifecycleManager`, `PreTradeSafetyGate`, and Phase 1 `RiskEngine.evaluate()`.[m
+[32m+[m[32m1. **No Unrestricted LLM or ML Execution:** Neither an LLM, an educational rule, nor a statistical/ML model has direct authority to place trades or override risk limits. Every signal must pass through `EmergencyStopController`, `SignalLifecycleManager`, `PreTradeSafetyGate`, and Phase 1 `RiskEngine.evaluate()`.[m
+ 2. **Live Trading Strictly Blocked (DEMO-Only Enforcement):** `ExecutionMode.LIVE` and `live_trading_enabled=True` are blocked by `TradingSafetyError` and `LiveTradingBlockedError`. Any connection to an MT5 `ACCOUNT_TRADE_MODE_REAL (2)` or `ACCOUNT_TRADE_MODE_CONTEST (1)` account, or any `TRADE_RETCODE_ONLY_REAL (10032)` response, immediately shuts down the terminal connection and raises `LiveTradingBlockedError`.[m
+[31m-3. **Synthetic Test Data Notice:** All CSV, mock terminal, and inline multi-regime test fixtures under `tests/` are strictly synthetic test data created for deterministic offline verification and must never be interpreted as evidence of real-world trading profitability.[m
+[32m+[m[32m3. **Not Production-Ready & No Profitability Guarantee:** ATLAS AI `v0.1.0` is an offline-verified research and **DEMO-only** engineering framework. It has not been validated on a live or demo broker feed and carries zero guarantee of trading profitability.[m
+[32m+[m[32m4. **Synthetic Test Data Notice:** All CSV, mock terminal (`MockMT5TerminalBackend`), and inline multi-regime test fixtures under `tests/` are strictly synthetic test data created for deterministic offline verification and must never be interpreted as evidence of real-world trading performance.[m
+[32m+[m[32m5. **Remaining Requirements Before Supervised MT5 Demo Operation:**[m
+[32m+[m[32m   - **Windows Host with MetaTrader 5 Terminal & Package:** Running against an actual MT5 demo account requires installing the official `MetaTrader5` Python package on a Windows host with a logged-in MT5 terminal (`ACCOUNT_TRADE_MODE_DEMO = 0`) and algorithmic trading enabled.[m
+[32m+[m[32m   - **Explicit `TrustedBalanceAnchorConfig` Configuration:** Before running `PersistentAccountRiskTracker` against an actual MT5 demo account, operators must configure `TrustedBalanceAnchorConfig` matching the demo account's initial deposit or verified rollover balance.[m
+[32m+[m[32m   - **Supervised Dry-Run Shadow Validation (`dry_run_only=True`):** Operators should first run `DemoTradingOrchestrator` with `DemoRuntimeConfig(dry_run_only=True)` to validate live demo market-data ingestion, candle-close deduplication, strategy signals, and risk decisions with zero broker order submissions before enabling `dry_run_only=False` on a demo account.[m
+[1mdiff --git a/docs/architecture.md b/docs/architecture.md[m
+[1mindex 07fe2b0..b35a550 100644[m
+[1m--- a/docs/architecture.md[m
+[1m+++ b/docs/architecture.md[m
+[36m@@ -1,17 +1,17 @@[m
+[31m-# ATLAS AI — System Architecture & Phase 7 Execution Safety Reference[m
+[32m+[m[32m# ATLAS AI — System Architecture & Phases 7–9 Safety Reference[m
+ [m
+ **Version:** `0.1.0`  [m
+[31m-**Completed Phases:** Phase 0 through Phase 7  [m
+[32m+[m[32m**Completed Phases:** Phase 0 through Phase 9 (Steps 9.1–9.3)[m[41m  [m
+ **Primary Instrument:** `XAUUSD`[m
+ [m
+ ---[m
+ [m
+ ## 1. Architectural Principles[m
+ [m
+[31m-1. **Deterministic Risk Supremacy:** No LLM, educational rule (`KnowledgeBasedStrategy`), or machine-learning classifier (`MLSignalStrategy`) can bypass Phase 1 `RiskEngine.evaluate()` or Phase 7 `PreTradeSafetyGate.validate_and_build_order()`.[m
+[32m+[m[32m1. **Deterministic Risk & Circuit-Breaker Supremacy:** No LLM, educational rule (`KnowledgeBasedStrategy`), or machine-learning classifier (`MLSignalStrategy`) can bypass Phase 9 `EmergencyStopController.assert_trading_authorized()`, Phase 1 `RiskEngine.evaluate()`, or Phase 7 `PreTradeSafetyGate.validate_and_build_order()`.[m
+ 2. **Strict DEMO-Only Execution:** Live trading (`ExecutionMode.LIVE`, `live_trading_enabled=True`, `ACCOUNT_TRADE_MODE_REAL = 2`, `ACCOUNT_TRADE_MODE_CONTEST = 1`, or MQL5 `TRADE_RETCODE_ONLY_REAL = 10032`) is blocked across configuration, connection, pre-trade validation, execution engine, and hardware-level backend layers.[m
+[31m-3. **Fail-Closed Accounting & Persistence:** Unverified account history, empty broker deal cache (`history_deals_get() == ()`), ambiguous commission/dividend attribution, corrupted persistence files, stale backup rollbacks, or unresolved order intents immediately block order submission.[m
+[31m-4. **Offline-First Determinism:** Importing `atlas_ai` and running the entire test suite (`124` tests) never requires an installed `MetaTrader5` package or a running MT5 terminal.[m
+[32m+[m[32m3. **Fail-Closed Accounting, Analytics & Persistence:** Unverified account history, empty broker deal cache (`history_deals_get() == ()`), ambiguous commission/dividend attribution, `DEAL_ENTRY_INOUT` / `DEAL_ENTRY_OUT_BY` position reversals, corrupted persistence files, stale backup rollbacks, unresolved order intents, or latched emergency circuit-breaker states immediately block order submission.[m
+[32m+[m[32m4. **Offline-First Determinism:** Importing `atlas_ai` and running the entire test suite (`153` tests across 15 test modules) never requires an installed `MetaTrader5` package or a running MT5 terminal.[m
+ [m
+ ---[m
+ [m
+[36m@@ -28,6 +28,8 @@[m
+ | `knowledge/` | Phase 5 | Multi-format educational document loader, text chunker, deterministic/LLM rule extraction, `KnowledgeRuleValidator`, `KnowledgeRepository`, and `KnowledgeBasedStrategy`. |[m
+ | `models/` | Phase 6 | `TripleBarrierLabeler`, `MLFeatureBuilder`, `FoldStandardScaler`, `RegularizedLogisticClassifier`, `GradientBoostedStumpEnsemble`, `WalkForwardValidator`, and `MLSignalStrategy`. |[m
+ | `execution/` | Phase 7 | MetaTrader 5 terminal abstraction, connection/market-data adapters, OS-locked crash-safe persistence, `TrustedBalanceAnchor` account risk tracker, write-ahead execution ledger, 14-step `PreTradeSafetyGate`, and `MT5DemoExecutionEngine`. |[m
+[32m+[m[32m| `analytics/` | Phase 8 | `PersistentTradeJournal` (with mandatory pre-send `EntryContextSnapshot` hook), `DemoTradeReconstructor`, `PerformanceAttributionEngine`, `DriftDetectionEngine`, and human-gated `GovernancePromotionEvaluator`. |[m
+[32m+[m[32m| `runtime/` | Phase 9 | `DemoRuntimeConfig`, persistent crash-safe `EmergencyStopController`, `PersistentBarStateTracker` (closed-bar evaluation deduplication), and 14-step closed-loop `DemoTradingOrchestrator`. |[m
+ [m
+ ---[m
+ [m
+[36m@@ -43,7 +45,7 @@[m
+ ### 3.2 Crash-Safe OS-Locked Persistence (`persistence.py`)[m
+ - **Cross-Process OS File Lock (`FileLock`):** Uses `msvcrt.locking(fd, msvcrt.LK_NBLCK, 1)` on Windows and `fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)` on POSIX on `<target>.lock`, initializing the 1-byte marker only after acquiring the exclusive kernel lock and never unlinking `.lock` on release. Process crashes release the lock automatically via the OS kernel file-descriptor table.[m
+ - **Hash-Chained Envelopes (`PersistedEnvelope`):** Every write increments `generation` monotonically ($1, 2, 3, \dots$), chains `previous_checksum` to generation $G - 1$'s `payload_checksum` (or `GENESIS_CHECKSUM` for generation 1), binds `(account_login, server)`, and writes via `<target>.tmp.<pid>.<uuid>` + `os.fsync()` + `os.replace()`.[m
+[31m-- **Safe Crash Recovery:** Detects both `<primary>.tmp.*` and `<primary>.bak.tmp.*` interrupted writes, recovers valid higher-generation `.tmp.*` envelopes, never silently restores a stale `.bak` execution ledger, and fails closed (`PersistenceCorruptionError`) if all candidate envelopes are corrupted.[m
+[32m+[m[32m- **Safe Crash Recovery:** Detects both `<primary>.tmp.*` and `<primary>.bak.tmp.*` interrupted writes, recovers valid higher-generation `.tmp.*` envelopes, never silently restores a stale `.bak` execution ledger, and fails closed (`PersistenceCorruptionError` / `LedgerRecoveryLockError`) if all candidate envelopes are corrupted or locked.[m
+ [m
+ ### 3.3 `TrustedBalanceAnchor` & Official MQL5 (`0..17`) Deal Accounting (`account_state.py`)[m
+ - **Mandatory Balance Completeness Proof:** Reconstructs `daily_starting_balance` from either a verified `PERSISTED_ROLLOVER_ANCHOR` or an explicit `CONFIGURED_BALANCE_ANCHOR`, rejecting `None` or empty (`len == 0`) deal history and future-dated deals (`time_utc > reference_now_utc`).[m
+[36m@@ -53,26 +55,59 @@[m
+   - Ambiguous or retroactive types (`DEAL_TYPE_CORRECTION = 5`, `DEAL_TYPE_BUY_CANCELED = 13`, `DEAL_TYPE_SELL_CANCELED = 14`, unknown codes) and inline (`commission`/`fee`) + separate `DEAL_TYPE_COMMISSION` duplicates fail closed with `AccountStateReconstructionError`.[m
+ - **5 PM `America/New_York` DST-Aware Rollover:** Computes UTC trading-day bounds using IANA `ZoneInfo("America/New_York")` across EST (`UTC-5`) and EDT (`UTC-4`), strips consistent `account.credit` from floating PnL and effective cash equity, counts account-wide open positions via `positions_get(None)`, and preserves `peak_balance` high-water marks across rollovers.[m
+ [m
+[31m-### 3.4 14-Step `PreTradeSafetyGate` (`safety.py`)[m
+[31m-1. `ExecutionSafetyConfig` DEMO-only mode check.[m
+[31m-2. Terminal connection health, API permissions, and DEMO account (`trade_mode == 0`) check.[m
+[31m-3. Signal executability (`BUY`/`SELL` only, positive entry/SL/TP prices).[m
+[31m-4. `PersistentExecutionLedger` readiness (`RECOVERY_REQUIRED_LOCKED` block, unresolved intent block, duplicate ID block, and opposite-direction `ACTIVE`/`PARTIALLY_FILLED` block).[m
+[31m-5. Live broker position (`positions_get`) and working-order (`orders_get`) conflict checks (blocking opposite-direction positions regardless of `magic` and conflicting working orders).[m
+[31m-6. `SignalLifecycleManager` state/expiration validation + `MT5SymbolTradeMode` (`DISABLED=0`, `LONGONLY=1`, `SHORTONLY=2`, `CLOSEONLY=3`, `FULL=4`) enforcement + `InstrumentSpec` mapping.[m
+[31m-7. Real-time tick freshness check (`max_tick_age_seconds`).[m
+[31m-8. Live Bid-Ask spread limit check in `symbol_info.point` units (`max_allowed_spread_points`).[m
+[31m-9. Live execution price drift check (`max_entry_deviation_points`) and directional SL/TP geometry at live market price.[m
+[31m-10. Broker stop-level (`trade_stops_level`) and freeze-level (`trade_freeze_level`) minimum distance checks.[m
+[31m-11. Verified `AccountState` reconstruction and Phase 1 `RiskEngine.evaluate()` at live execution price.[m
+[31m-12. Volume bounds, `volume_step` multiple, and `RiskEngine` cap check (synchronizing `RiskDecision` metadata when `requested_volume` overrides `calculated_position_size`).[m
+[31m-13. Execution-mode-aware filling mode resolution (`resolve_supported_filling_mode`).[m
+[31m-14. Pre-flight MT5 `order_check()` acceptance and post-trade free-margin verification.[m
+[31m-[m
+[31m-### 3.5 Write-Ahead `PersistentExecutionLedger` & `MT5DemoExecutionEngine` (`ledger.py`, `engine.py`)[m
+[31m-- **Write-Ahead Lifecycle:** Every order is durably persisted through `CREATED` $\rightarrow$ `VALIDATED` $\rightarrow$ `SUBMITTING` before `backend.order_send()` is invoked, followed by a pre-send TOCTOU re-check of DEMO account status, tick freshness, spread, and price drift.[m
+[31m-- **Retcode Classification & Post-Accept Verification:**[m
+[31m-  - Only retcodes in `DETERMINISTIC_REJECTION_RETCODES` transition from `SUBMITTING` to `REJECTED` (or `CANCELLED` for `10007`).[m
+[31m-  - `10011 (ERROR)`, `10012 (TIMEOUT)`, `10023 (ORDER_CHANGED)`, `10031 (CONNECTION)`, `0`, negative, and unknown retcodes transition `SUBMITTING` $\rightarrow$ `UNKNOWN` $\rightarrow$ `RECONCILIATION_REQUIRED` and never trigger blind retries.[m
+[31m-  - `10009 (DONE)`, `10010 (DONE_PARTIAL)`, and `10008 (PLACED)` transition to `SUBMITTED` and run `_verify_broker_execution_after_accept()` against `positions_get()`, `orders_get()`, and `history_deals_get()` using exact token matching (`extract_comment_identifiers`).[m
+[31m-- **Broker Reconciliation (`reconcile_with_broker`):** Fails closed on `None` or empty deal history (`len(deals) == 0`), matches entries by exact comment tokens, `magic`, `symbol`, `direction`, and unique tickets, discovers orphan open positions (`ACTIVE`), orphan working orders (`RECONCILIATION_REQUIRED`), and closed orphan execution deals (`FILLED`), and keeps `RECOVERY_REQUIRED_LOCKED` locked while any working order or unresolved entry remains.[m
+[32m+[m[32m### 3.4 14-Step `PreTradeSafetyGate` (`safety.py`) & Write-Ahead `PersistentExecutionLedger` (`ledger.py`, `engine.py`)[m
+[32m+[m[32m- Validates DEMO mode, terminal connectivity, signal prices, ledger readiness, live broker position/working-order conflicts, `SignalLifecycleManager` state, `MT5SymbolTradeMode`, tick freshness, Bid-Ask spread in `symbol_info.point`, live price drift, stop/freeze levels, live `RiskEngine.evaluate()`, lot volume bounds/steps, execution-mode filling policy, and MT5 `order_check()`.[m
+[32m+[m[32m- Persists `CREATED` $\rightarrow$ `VALIDATED` $\rightarrow$ `SUBMITTING` before `backend.order_send()`, transitions ambiguous retcodes (`10011`, `10012`, `10023`, `10031`, `None`, exceptions) to `UNKNOWN` $\rightarrow$ `RECONCILIATION_REQUIRED` without blind retries, and verifies fills against broker positions/deals.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m## 4. Phase 8 Post-Trade Analytics, Attribution & Drift/Promotion Governance (`src/atlas_ai/analytics/`)[m
+[32m+[m
+[32m+[m[32m### 4.1 Closed-Trade Reconstruction & Mandatory Pre-Send Entry Context (`trade_reconstructor.py`, `journal.py`)[m
+[32m+[m[32m- **Mandatory Pre-Send `EntryContextSnapshot` Persistence:** `PersistentTradeJournal.bind_execution_engine()` hooks into `MT5DemoExecutionEngine` after `SUBMITTING` persistence and before `backend.order_send()`, binding the staged `StrategyAnalysisReport` to the exact approved volume, live price, and 1R `initial_risk_amount`. If journal persistence fails, the order is aborted to `FAILED` before `order_send()` is invoked.[m
+[32m+[m[32m- **Exact Cash-Flow Identity & Partial Exits:** `DemoTradeReconstructor.sync_closed_demo_trades()` groups `DEAL_ENTRY_IN`, `DEAL_ENTRY_OUT`, and `DEAL_TYPE_COMMISSION` deals by position, enforces `net_pnl == gross_pnl - commission - fee + swap` without double-counting, records `PartialExitProgressRecord` for partially closed positions without prematurely terminating `SignalLifecycleManager`, and fails closed on `DEAL_ENTRY_INOUT (2)` or `DEAL_ENTRY_OUT_BY (3)`.[m
+[32m+[m
+[32m+[m[32m### 4.2 Performance Attribution, Drift Detection & Promotion Governance (`attribution.py`, `drift_and_governance.py`)[m
+[32m+[m[32m- **Multi-Dimensional Attribution (`PerformanceAttributionEngine`):** Computes Phase 4-compatible `BacktestMetrics`, R-multiple Sharpe/Sortino/drawdown, `ExecutionQualityReport`, and single-label vs. multi-label segment breakdowns.[m
+[32m+[m[32m- **Drift & Calibration Monitoring (`DriftDetectionEngine`):** Evaluates realized R-expectancy, consecutive loss streaks, execution slippage degradation (`EXECUTION_DEGRADED`), ML Brier/ECE calibration drift, and advisory-only knowledge-rule quarantine recommendations (`QUARANTINE_RECOMMENDED`) with strict severity precedence (`QUARANTINE_RECOMMENDED` $>$ `EXECUTION_DEGRADED` $>$ `WARNING_DRIFT_DETECTED` $>$ `INSUFFICIENT_SAMPLE` $>$ `HEALTHY`).[m
+[32m+[m[32m- **Human-Gated Promotion Governance (`GovernancePromotionEvaluator`):** Enforces chronological walk-forward anti-leakage (`purge_bars >= horizon_bars`, non-overlapping chronological test folds), rejects any relaxation of Phase 1 `RiskParameters` (requiring baseline and candidate risk parameters together when provided), and enforces `requires_human_approval == True`.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m## 5. Phase 9 Closed-Loop Demo Runtime & Persistent Emergency Circuit Breaker (`src/atlas_ai/runtime/`)[m
+[32m+[m
+[32m+[m[32m### 5.1 Persistent Crash-Safe `EmergencyStopController` (`circuit_breaker.py`, `config.py`, `models.py`)[m
+[32m+[m[32m- **Crash-Safe Latching:** Persists `EmergencyStopState` via Phase 7 `CrashSafeJsonPersistence` bound to `(account_login, server)`. Automatically latches `LATCHED_HALTED` on manual operator stops (`trigger_manual_stop`), `DriftStatus.QUARANTINE_RECOMMENDED`, `DriftStatus.EXECUTION_DEGRADED`, `LedgerHealthStatus.RECOVERY_REQUIRED_LOCKED`, or consecutive connection/persistence failure thresholds (`max_consecutive_connection_failures`, `max_consecutive_persistence_failures`).[m
+[32m+[m[32m- **No Auto-Unlock Across Restarts:** Once latched, `assert_trading_authorized()` raises `CircuitBreakerLatchedError` across process restarts until an explicit human reset (`reset_emergency_stop(operator_rationale=...)`) with a non-empty rationale is committed to disk, preserving all historical `EmergencyAuditEvent` records.[m
+[32m+[m
+[32m+[m[32m### 5.2 Persistent Bar-Close Deduplication (`PersistentBarStateTracker`)[m
+[32m+[m[32m- Persists `BarEvaluationState` (`last_evaluated_bar_timestamps_utc` keyed by `<SYMBOL>:<TIMEFRAME>`) via `CrashSafeJsonPersistence` bound to `(account_login, server)`.[m
+[32m+[m[32m- Rejects corrupted state (`PersistenceCorruptionError`), account/server mismatch (`PersistenceAccountMismatchError`), lingering `.tmp.*` recovery locks (`LedgerRecoveryLockError`), and backward bar-timestamp regression (`PersistenceRollbackDetectedError`).[m
+[32m+[m
+[32m+[m[32m### 5.3 14-Step Closed-Loop `DemoTradingOrchestrator` (`orchestrator.py`)[m
+[32m+[m[32mEvery call to `DemoTradingOrchestrator.run_single_cycle()` executes in strict order:[m
+[32m+[m[32m1. `01_VERIFY_CONNECTION` (`connection.ensure_connected()`, recording connection failure/success in `EmergencyStopController`).[m
+[32m+[m[32m2. `02_RECONCILE_UNRESOLVED_ORDERS` (`execution_engine.reconcile_unresolved_orders()`).[m
+[32m+[m[32m3. `03_SYNC_CLOSED_TRADES` (`trade_reconstructor.sync_closed_demo_trades()`).[m
+[32m+[m[32m4. `04_RECONSTRUCT_ACCOUNT_STATE` (`account_tracker.reconstruct_account_state()`).[m
+[32m+[m[32m5. `05_EVALUATE_DRIFT_AND_LEDGER_HEALTH` (`drift_engine.evaluate_trades()` and `reconciliation_report.health_status`).[m
+[32m+[m[32m6. `06_EVALUATE_EMERGENCY_STOP_STATE` (`emergency_stop.evaluate_ledger_health()` and `evaluate_drift_report()`).[m
+[32m+[m[32m7. `07_ASSERT_TRADING_AUTHORIZED` (`emergency_stop.assert_trading_authorized()`).[m
+[32m+[m[32m8. `08_CHECK_BAR_CLOSE_DEDUPLICATION` (`market_data.fetch_closed_candles()` with `start_pos=1` and `bar_state_tracker.is_bar_already_evaluated()`, returning `SKIPPED_DUPLICATE_BAR` after Steps 1–7 if already evaluated).[m
+[32m+[m[32m9. `09_FETCH_SYNCHRONIZED_MARKET_DATA` (`fetch_market_data_pipeline_result()` across `primary_timeframe` and `higher_timeframes`).[m
+[32m+[m[32m10. `10_RUN_FEATURE_PIPELINE` (`feature_pipeline.transform()`).[m
+[32m+[m[32m11. `11_RUN_STRATEGY_ENGINE` (`strategy_engine.analyze()`).[m
+[32m+[m[32m12. `12_EVALUATE_RISK` (checking `WAIT` $\rightarrow$ `NO_EXECUTABLE_SIGNAL` and `RiskDecision` $\rightarrow$ `RISK_REJECTED`).[m
+[32m+[m[32m13. `13_STAGE_JOURNAL_CONTEXT` (`journal.stage_analysis_report()`).[m
+[32m+[m[32m14. `14_EXECUTE_OR_DRY_RUN_AND_COMMIT_BAR`:[m
+[32m+[m[32m    - When `config.dry_run_only == True`: structurally bypasses `execution_engine.execute_signal()` and `backend.order_send()`, commits `last_evaluated_bar_timestamp_utc`, and returns `DRY_RUN_EVALUATED`.[m
+[32m+[m[32m    - When `config.dry_run_only == False`: invokes `execution_engine.execute_signal()` and commits `last_evaluated_bar_timestamp_utc` only after the execution outcome (`EXECUTED_ORDER`, `BROKER_REJECTED`, or `AMBIGUOUS_EXECUTION_REQUIRES_RECONCILIATION`) is durably recorded in the ledger.[m
+[32m+[m
+[32m+[m[32m---[m
+[32m+[m
+[32m+[m[32m## 6. Known Limitations & Operational Requirements[m
+[32m+[m
+[32m+[m[32m1. **DEMO-Only & Non-Production Status:** ATLAS AI `v0.1.0` is strictly a DEMO-only research and engineering system. Live trading is disabled in code and configuration, and no guarantee of profitability is made.[m
+[32m+[m[32m2. **Drift Report Initial Balance Reference (`L-9.2-Obs`):** During Step 5 of `DemoTradingOrchestrator.run_single_cycle()`, `drift_engine.evaluate_trades()` receives `initial_balance=account_state.daily_starting_balance`. R-multiple expectancy, loss streaks, slippage, and Brier/ECE calibration are unaffected; embedded `overall_metrics.net_profit_pct` reflects return relative to `daily_starting_balance`.[m
+[32m+[m[32m3. **Audit History Growth (`L-9.1-1`):** `EmergencyStopController` retains the full `audit_history` tuple in `emergency_stop_state.json` across resets.[m
+[32m+[m[32m4. **External MT5 Terminal & `TrustedBalanceAnchorConfig` Setup:** Supervised demo execution requires a Windows host with the `MetaTrader5` Python package installed, an authenticated MT5 demo terminal (`trade_mode == 0`), and a configured `TrustedBalanceAnchorConfig` matching the demo account's initial deposit or verified rollover balance.[m
+[1mdiff --git a/src/atlas_ai/main.py b/src/atlas_ai/main.py[m
+[1mindex 7c35861..378387d 100644[m
+[1m--- a/src/atlas_ai/main.py[m
+[1m+++ b/src/atlas_ai/main.py[m
+[36m@@ -1,4 +1,4 @@[m
+[31m-"""Entry point and Phase 0 system readiness check for ATLAS AI."""[m
+[32m+[m[32m"""Entry point and system readiness check for ATLAS AI (Completed through Phase 9)."""[m
+ [m
+ import sys[m
+ [m
+[36m@@ -9,7 +9,7 @@[m [mfrom atlas_ai.core.logger import setup_logging[m
+ [m
+ [m
+ def run_foundation_check(settings: AppSettings | None = None) -> bool:[m
+[31m-    """Initialize configuration and logging, then verify Phase 0 foundational readiness.[m
+[32m+[m[32m    """Initialize configuration and logging, then verify system readiness across Phases 0–9.[m
+ [m
+     Args:[m
+         settings: Optional pre-loaded AppSettings instance for testing.[m
+[36m@@ -21,7 +21,7 @@[m [mdef run_foundation_check(settings: AppSettings | None = None) -> bool:[m
+     logger = setup_logging(active_settings)[m
+ [m
+     logger.info([m
+[31m-        "Starting %s v%s [Completed: Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, and Phase 7]",[m
+[32m+[m[32m        "Starting %s v%s [Completed: Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, Phase 7, Phase 8, and Phase 9]",[m
+         __app_name__,[m
+         __version__,[m
+     )[m
+[36m@@ -33,7 +33,7 @@[m [mdef run_foundation_check(settings: AppSettings | None = None) -> bool:[m
+         active_settings.live_trading_enabled,[m
+     )[m
+     logger.info([m
+[31m-        "System readiness check passed (Phase 0, Phase 1, Phase 2, Phase 3, Phase 4, Phase 5, Phase 6, and Phase 7 completed). Ready for Phase 8."[m
+[32m+[m[32m        "System readiness check passed (Phases 0–9 completed: Foundation, Domain/Risk, Market Data, Strategies, Backtest, Knowledge, ML Models, MT5 Demo Execution, Post-Trade Analytics/Governance, and Closed-Loop Demo Runtime Orchestrator). Strictly DEMO-only; live trading disabled."[m
+     )[m
+     return True[m
+ [m
+[1mdiff --git a/tests/test_foundation.py b/tests/test_foundation.py[m
+[1mindex 9cd6aef..deb6492 100644[m
+[1m--- a/tests/test_foundation.py[m
+[1m+++ b/tests/test_foundation.py[m
+[36m@@ -81,12 +81,26 @@[m [mdef test_logging_setup_writes_to_file(tmp_path: Path) -> None:[m
+ [m
+ [m
+ def test_run_foundation_check_and_cli_entry(tmp_path: Path) -> None:[m
+[31m-    """Foundation check and CLI main() must succeed under valid settings."""[m
+[32m+[m[32m    """Foundation check and CLI main() must succeed under valid settings and log Phase 0–9 readiness."""[m
+[32m+[m[32m    import logging[m
+[32m+[m
+[32m+[m[32m    log_dir = tmp_path / "cli_logs"[m
+     settings = AppSettings([m
+         env=EnvironmentMode.TESTING,[m
+[31m-        log_dir=tmp_path / "cli_logs",[m
+[31m-        log_to_file=False,[m
+[32m+[m[32m        log_dir=log_dir,[m
+[32m+[m[32m        log_to_file=True,[m
+     )[m
+     assert run_foundation_check(settings) is True[m
+     assert __version__ == "0.1.0"[m
+[32m+[m
+[32m+[m[32m    logger = logging.getLogger("atlas_ai")[m
+[32m+[m[32m    for handler in list(logger.handlers):[m
+[32m+[m[32m        handler.flush()[m
+[32m+[m[32m        handler.close()[m
+[32m+[m[32m        logger.removeHandler(handler)[m
+[32m+[m
+[32m+[m[32m    log_content = (log_dir / "atlas_ai.log").read_text(encoding="utf-8")[m
+[32m+[m[32m    assert "Phase 8, and Phase 9" in log_content[m
+[32m+[m[32m    assert "Phases 0–9 completed" in log_content[m
+[32m+[m[32m    assert "Strictly DEMO-only; live trading disabled." in log_content[m
+     assert main() == 0[m
